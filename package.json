@@ -1,0 +1,15 @@
+{
+  "name": "node-libutp",
+  "version": "0.0.0",
+  "description": "libtup binding",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install": "node-gyp rebuild"
+  },
+  "repository": "",
+  "author": "",
+  "license": "BSD",
+  "gypfile": true,
+  "gitHead": "9fbd421916c1a8de1659e1127453dd45368a865f"
+}
