@@ -18,6 +18,5 @@ $ ./utp_recv log_rcv.log 8001 received.file
 And then:
 
 ```bash
-$ NODE_DEBUG=utp node test/test.js path/to/file
+$ NODE_DEBUG=utp ./utp_send test.js.log localhost:8001 path/to/file
 ```
-

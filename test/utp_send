@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+var assert = require('assert');
+var utp = require('../lib/utp');
+
+var log_file = process.argv[2]; assert(log_file);
+var host = process.argv[3].split(':')[0]; assert(host);
+var port = parseInt(process.argv[3].split(':')[1], 10); assert(host);
+var file = process.argv[4]; assert(file);
+
+var udp = require('dgram').createSocket('udp4');
+
+var s = new utp.Socket(udp);
+s.on('close', function() {
+  udp.close();
+});
+
+utp.UTPLog.pipe(require('fs').createWriteStream(log_file));
+// var s = new require('net').Socket();
+
+var input = require('fs').createReadStream(file);
+s.connect(host, port);
+input.pipe(s);
