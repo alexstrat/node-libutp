@@ -5,10 +5,9 @@
 
   'targets': [
     {
-      'target_name': 'utp',
+      'target_name': 'utp_wrap',
       'defines' : ['POSIX'],
       'sources': [
-        './src/utp.cc',
         './src/utp_wrap.cc',
         '<@(libutp)/utp.cpp',
         '<@(libutp)/utp_utils.cpp'

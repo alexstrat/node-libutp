@@ -7,8 +7,28 @@
 #include "utp_utils.h"
 using namespace v8;
 
+
 Local<Object> AddressToJS(const sockaddr* addr);
-// Handle<Object> _exports;
+Persistent<Object> _exports;
+
+void utp_log(char const* fmt, ...)
+{
+  char log_line[500];
+
+  va_list vl;
+  va_start(vl, fmt);
+  vsprintf(log_line, fmt, vl);
+
+  HandleScope scope;
+  Local<Value> argv[1] = {
+    scope.Close(String::New(log_line))
+  };
+
+  node::MakeCallback(_exports, "on_utp_log", 1, argv);
+
+  va_end(vl);
+
+}
 
 // proc
 void incoming_proc(void *userdata, struct UTPSocket* s) {
@@ -130,8 +150,14 @@ UTPWrap::UTPWrap(UTPSocket* _us):node::ObjectWrap() {
   UTP_SetCallbacks(utp_socket, &utp_callbacks, this);
 }
 
+Handle<Value> GetMilliseconds(const Arguments& args) {
+  HandleScope scope;
+  return scope.Close(Number::New(UTP_GetMilliseconds()));
+}
+
 void UTPWrap::Initialize(Handle<Object> exports) {
-  //_exports = exports;
+  _exports = Persistent<Object>::New(exports);
+
   // Prepare constructor template
   Local<FunctionTemplate> tpl = FunctionTemplate::New(New);
   tpl->SetClassName(String::NewSymbol("UTP"));
@@ -146,7 +172,11 @@ void UTPWrap::Initialize(Handle<Object> exports) {
   Persistent<Function> constructor = Persistent<Function>::New(tpl->GetFunction());
   exports->Set(String::NewSymbol("UTP"), constructor);
   exports->Set(String::NewSymbol("checkTimeouts"), FunctionTemplate::New(CheckTimeouts)->GetFunction());
+  exports->Set(String::NewSymbol("UTP_GetMilliseconds"), FunctionTemplate::New(GetMilliseconds)->GetFunction());
+
 }
+
+NODE_MODULE(utp_wrap, UTPWrap::Initialize)
 
 Handle<Value> UTPWrap::New(const Arguments& args) {
 
